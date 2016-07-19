@@ -1,4 +1,4 @@
-package com.github.rsallar.underevalprj.domain;
+package com.github.rsallar.underevalprj.domain.serializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

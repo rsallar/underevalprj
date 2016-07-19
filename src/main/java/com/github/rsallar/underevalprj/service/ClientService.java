@@ -1,5 +1,6 @@
 package com.github.rsallar.underevalprj.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.security.SocialUser;
@@ -18,14 +19,14 @@ public class ClientService implements SocialUserDetailsService {
 
     
     public Client findClient(String name) {
-       return clientRepository.findByUsernameAllIgnoringCase(name);
+       return clientRepository.findByEmailAllIgnoringCase(name);
     }
 
 
 	@Override
 	public SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException {
 		Client client = findClient(userId);
-		return new SocialUser(client.getUsername(), client.getPassword(), client.getRoles());
+		return new SocialUser(client.getEmail(),  RandomStringUtils.randomAlphanumeric(8) , client.getRoles());
 	}
     
     

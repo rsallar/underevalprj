@@ -8,8 +8,8 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.social.connect.Connection;
@@ -19,9 +19,13 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-public class MongoUsersConnectionRepository implements UsersConnectionRepository {
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
-    private final MongoOperations mongo;
+public class MongoUsersConnectionRepository implements UsersConnectionRepository {
+	Logger logger = LoggerFactory.getLogger(MongoUsersConnectionRepository.class);
+    
+	private final MongoOperations mongo;
     private final ConnectionFactoryLocator connectionFactoryLocator;
     private final MongoConnectionTransformers mongoConnectionTransformers;
     private ConnectionSignUp connectionSignUp;
@@ -39,10 +43,19 @@ public class MongoUsersConnectionRepository implements UsersConnectionRepository
 
     @Override
     public List<String> findUserIdsWithConnection(final Connection<?> connection) {
-        ConnectionKey key = connection.getKey();
+    	
+    	ConnectionKey key = connection.getKey();
+    	
+    	logger.info(connection.fetchUserProfile().getEmail());
+    	logger.info(key.getProviderUserId());
+    	logger.info(connection.getDisplayName());
+    	
+    	
         Query query = query(where("providerId").is(key.getProviderId()).and("providerUserId").is(key.getProviderUserId()));
         query.fields().include("userId");
+        
         List<String> localUserIds = ImmutableList.copyOf(transform(mongo.find(query, MongoConnection.class), mongoConnectionTransformers.toUserId()));
+       
         if (localUserIds.isEmpty() && connectionSignUp != null) {
             String newUserId = connectionSignUp.execute(connection);
             if (newUserId != null) {

@@ -10,6 +10,6 @@ public interface ClientRepository extends CrudRepository<Client, Long> {
 
     Page<Client> findAll(Pageable pageable);
     
-    Client findByUsernameAllIgnoringCase(String username);
+    Client findByEmailAllIgnoringCase(String username);
 
 }

@@ -19,7 +19,9 @@
 package com.github.rsallar.underevalprj.security;
 
 
-
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +36,8 @@ import com.github.rsallar.underevalprj.repository.ClientRepository;
 
 @Service
 public class MongoDBAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
-
+	
+	Logger logger = LoggerFactory.getLogger(MongoDBAuthenticationProvider.class);
 
     @Autowired
     private ClientRepository users;
@@ -45,18 +48,20 @@ public class MongoDBAuthenticationProvider extends AbstractUserDetailsAuthentica
     }
 
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
-        UserDetails loadedUser;
+    protected UserDetails retrieveUser(String id, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        
+   	
+    	UserDetails loadedUser;
 
         try {
-            Client client = users.findByUsernameAllIgnoringCase(username);
+            Client client = users.findByEmailAllIgnoringCase(id);
             
             if (client == null) {
                 throw new InternalAuthenticationServiceException(
                         "UserDetailsService returned null, which is an interface contract violation");
             }
             
-            loadedUser = new User(client.getUsername(), client.getPassword(), client.getRoles());
+            loadedUser = new User(client.getEmail(), RandomStringUtils.randomAlphanumeric(8) , client.getRoles());
         } catch (Exception repositoryProblem) {
             throw new InternalAuthenticationServiceException(repositoryProblem.getMessage(), repositoryProblem);
         }

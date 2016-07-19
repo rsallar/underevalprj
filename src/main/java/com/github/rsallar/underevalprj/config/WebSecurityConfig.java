@@ -25,19 +25,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-    	 http
+    	http
          .formLogin()
          .loginPage("/login")
-         //.loginProcessingUrl("/login/authenticate")
+         .loginProcessingUrl("/login/authenticate")
+         .failureUrl("/login?param.error=bad_credentials")
          //.failureUrl("/login?param.error=bad_credentials")
          .permitAll()
          .and()
          .authorizeRequests()
-         .antMatchers("/favicon.ico", "/static-resources/**").permitAll()
+         .antMatchers("/favicon.ico", "/static-resources/**", "/openreservation").permitAll()
          .antMatchers("/**").authenticated()
          //.and()
          //.rememberMe()
-         .and()
+         .and().csrf().disable()
          .apply(new SpringSocialConfigurer());
     }
 
@@ -55,10 +56,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .build();                                           
     }
     
-    /*@Bean
-    public SocialUserDetailsService socialUsersDetailService() {
-        return new SocialClientService(userDetailsService());
-    }*/
-    
-    
+     
 }

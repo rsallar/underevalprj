@@ -7,44 +7,32 @@ import javax.annotation.concurrent.Immutable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.rsallar.underevalprj.domain.serializer.GrantedAuthorityDeserializer;
+import com.github.rsallar.underevalprj.domain.serializer.GrantedAuthoritySerializer;
 
 
 @Immutable
 public class Client {
-	
-	public Client(String username, String password, List<GrantedAuthority> roles){
-		this.username = username;
-		this.password = password;
+
+	public Client(String email, List<GrantedAuthority> roles){
+		this.email = email;
 		this.roles = roles;
 	}
 
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String ROLES = "roles";
+	private String id;
+    private String email;
 
-    @JsonProperty(USERNAME)
-    private String username;
-
-    @JsonProperty(PASSWORD)
-    private String password;
-
-    @JsonProperty(ROLES)
     @JsonSerialize(contentUsing = GrantedAuthoritySerializer.class)
     @JsonDeserialize(contentUsing = GrantedAuthorityDeserializer.class)
     private List<GrantedAuthority> roles;
 
 
-    public String getUsername() {
-        return username;
+     public String getEmail(){
+    	return email;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
+    
     public List<GrantedAuthority> getRoles() {
         return roles;
     }
@@ -52,10 +40,13 @@ public class Client {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("username", username)
-                .append("password", password)
+        		.append("email", email)
                 .append("roles", roles)
                 .toString();
     }
+
+	public String getId() {
+		return id;
+	}
 
 }
